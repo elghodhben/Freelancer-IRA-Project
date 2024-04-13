@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class AdminTableSeeder extends Seeder
@@ -12,15 +14,14 @@ class AdminTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminRecords =[
-            [ 'id'=>1,
-            'name'=>'wafa',
-            'photo'=>'',
-            'email'=>'wafa@gmail.com',
-            'password'=>'$2y$10$yRA9NiYRx8l.2lssXm9b0emW9f3D6MrFk9Po8xIuJlqclzXvOw.Qm'],
-        ];
 
-           \App\Models\Admin::insert($adminRecords);
+
+           DB::table('admins')->insert([
+            'name' => Str::random(10),
+            'email' => Str::random(10).'@example.com',
+            'password' => Hash::make('123456789'),
+            'photo' => Str::random(10),
+        ]);
 
     }
 }
