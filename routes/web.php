@@ -32,7 +32,7 @@ route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
 
 
 
- Route::match(['get','post'],'login','adminController@login');
+ Route::post(login','adminController@login');
  Route::group(['middleware'=>['admin']],function (){
 =======
  Route::match(['get','post'],'login','adminController@login');
