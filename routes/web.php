@@ -17,17 +17,32 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/administrateur', function () {
+    return redirect('/admin/login');
+});
+
+Route::get('/admin/login', function () {
+    return view('admin.login'); // Replace 'admin.login' with the actual view name for your login page
+});
+
+
 route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function (){
 
 
- //Route::group(['middleware'=>['admin']],function (){
+
+
+ Route::match(['get','post'],'login','adminController@login');
+ Route::group(['middleware'=>['admin']],function (){
 
   route::get('/dashboard','adminController@dashboard');
   route::get('/users','adminController@users');
 
   Route::post('update-user-status','adminController@UpdateUserStatus');
 
-  // });
+
+  Route::get('logout','adminController@logout');
+
+   });
 
 
 });
