@@ -20,7 +20,11 @@ class DatabaseSeeder extends Seeder
         // ]);
 
 
+<<<<<<< HEAD
        // $this->call(AdminTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+=======
+        $this->call(AdminTableSeeder::class);
+>>>>>>> 184cb556cfe738b593cd42a5497ceba887630191
     }
 }

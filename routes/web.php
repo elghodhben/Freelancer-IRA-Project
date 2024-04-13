@@ -28,11 +28,16 @@ Route::get('/admin/login', function () {
 
 route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function (){
 
+<<<<<<< HEAD
 
 
 
  Route::match(['get','post'],'login','adminController@login');
  Route::group(['middleware'=>['admin']],function (){
+=======
+ Route::match(['get','post'],'login','adminController@login');
+ //Route::group(['middleware'=>['admin']],function (){
+>>>>>>> 184cb556cfe738b593cd42a5497ceba887630191
 
   route::get('/dashboard','adminController@dashboard');
   route::get('/users','adminController@users');
@@ -42,7 +47,11 @@ route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
 
   Route::get('logout','adminController@logout');
 
+<<<<<<< HEAD
    });
+=======
+  // });
+>>>>>>> 184cb556cfe738b593cd42a5497ceba887630191
 
 
 });

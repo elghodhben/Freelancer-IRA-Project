@@ -13,7 +13,7 @@ class AdminTableSeeder extends Seeder
     public function run(): void
     {
         $adminRecords =[
-            [
+            [ 'id'=>1,
             'name'=>'wafa',
             'photo'=>'',
             'email'=>'wafa@gmail.com',
