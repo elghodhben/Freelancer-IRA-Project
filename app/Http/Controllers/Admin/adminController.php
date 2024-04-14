@@ -13,6 +13,8 @@ class adminController extends Controller
     return view('admin.dashboard');
    }
 
+
+
    /***********************login fonction*************************************** */
    public function login (Request $request){
     if ($request->isMethod('post')){
@@ -32,22 +34,28 @@ class adminController extends Controller
 
     $this->validate($request,$rules,$messages);
         if (Auth::guard('admin')->attempt(['email'=>$data['email'],'password'=>$data['password']])){
-            return redirect('admin/dashboard');
+            return redirect('/dashboard');
         } else{
             return redirect ()->back()->with('error_message','Invalid email or password');
          }
 
     }
     return view('admin.login');
- }
+    }
 
    /***********logout fonction************************************************************************* */
    public function logout (){
 
     Auth::guard('admin')->logout();
-    return redirect('admin/login');
+    return redirect('/login');
 
  }
+
+    /*****************all admins */
+
+
+
+
    /************get all users  */
    public function users (){
     $users=User::get()->toarray();
@@ -55,7 +63,7 @@ class adminController extends Controller
    }
 
 
-   /************* active or inactive */
+
 
     /**********update users status******************* */
     public function UpdateUserStatus  (Request $request){

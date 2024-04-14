@@ -13,24 +13,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/administrateur', function () {
-    return redirect('/admin/login');
-});
+//route::get('/dashboard','App\Http\Controllers\Admin\adminController@dashboard');
+//Route::match(['get','post'],'login','App\Http\Controllers\Admin\adminController@login');
 
-Route::get('/admin/login', function () {
-    return view('admin.login'); // Replace 'admin.login' with the actual view name for your login page
-});
+route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function (){
 
-Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function (){
-    Route::match(['get','post'],'login','adminController@login');
-    //Route::group(['middleware'=>['admin']],function (){
-    Route::get('/dashboard','adminController@dashboard');
-    Route::get('/users','adminController@users');
-    Route::post('update-user-status','adminController@UpdateUserStatus');
-    Route::get('logout','adminController@logout');
-    // });
+ Route::match(['get','post'],'login','adminController@login');
+ //Route::group(['middleware'=>['admin']],function (){
+
+  route::get('/dashboard','adminController@dashboard');
+  route::get('/users','adminController@users');
+
+  Route::post('update-user-status','adminController@UpdateUserStatus');
+
+
+  Route::get('logout','adminController@logout');
+
+  // });
+
+
 });
