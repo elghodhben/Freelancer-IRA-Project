@@ -19,7 +19,7 @@ $(document).on("click",".confirmDelete",function(){
             'Your file has been deleted.',
             'success'
           )
-          window.location="/admin/delete-"+module+"/"+moduleid;
+          window.location="/delete-"+module+"/"+moduleid;
         }
       }) })
 /*********update status USERS************ */

@@ -82,5 +82,11 @@ class adminController extends Controller
 
     }
 
+    public function delete ( $id) {
+        User::where('id',$id)->delete();
+      $message="User has deleted successfully";
+      return redirect()->back()->with('succes_message',$message);
+
+     }
 
 }

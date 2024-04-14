@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -36,13 +37,26 @@ class AuthController extends Controller
 
     if(Auth::attempt($c)){
         $user=Auth::user();
-        $token=md5(time()).'.'.md5($request->email);
-        $user->forceFill([
-            'api_token'=>$token,
-        ])->save();
-        return response()->json([
-            'token'=>$token,
-        ],200);
+
+        //check status of users
+        $status = User::where('email', $user->email)->where('status', 1)->count();
+
+        if ($status > 0) {
+            // Status is active (status = 1)
+            $token=md5(time()).'.'.md5($request->email);
+            $user->forceFill([
+                'api_token'=>$token,
+            ])->save();
+            return response()->json([
+                'token'=>$token,
+            ],200);
+        } else {
+            // Status is inactive or does not exist (status != 1)
+            return response()->json(['message' => 'Admin did not activate your account'], 403);
+
+        }
+
+
     }
       return response()->json([
         'message' => "Invalid credentials. Please check your email and password and try again."
@@ -74,6 +88,13 @@ class AuthController extends Controller
         $user->email = request()->email;
         $user->password = bcrypt(request()->password);
         $user->save();
+
+        $email= request()->email;
+        $messageData=['name'=> request()->name,'email'=>request()->email,
+        'code'=>base64_encode(request()->email)];
+        Mail::send('emails.confirmation',$messageData,function($message)use($email){
+            $message->to($email)->subject('confirm your account ');
+        });
 
         return response()->json($user, 201);
     }

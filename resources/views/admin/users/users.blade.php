@@ -20,6 +20,7 @@
                             <th>Name</th>
                             <th>email</th>
                             <th>status</th>
+
                         </tr>
                     </thead>
 
@@ -39,6 +40,10 @@
                                href="javascript:void(0)">
                                  <i style="font-size: 10px;" class="btn btn-outline-danger" id="status-{{$user ['id']}}"  status="Inactive">Inactive</i></a>
                                 @endif
+
+                                <a href="javascript:void(0)" module="user" moduleid="{{ $user ['id'] }}" title="user" class="confirmDelete">
+                                    <i style="font-size: 15px;" class="btn btn-outline-danger">delete</i></a>
+
 
                             </td>
                         </tr>

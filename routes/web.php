@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 //route::get('/dashboard','App\Http\Controllers\Admin\adminController@dashboard');
 //Route::match(['get','post'],'login','App\Http\Controllers\Admin\adminController@login');
 
-route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function (){
+route::prefix('/')->namespace('App\Http\Controllers\Admin')->group(function (){
 
  Route::match(['get','post'],'login','adminController@login');
  //Route::group(['middleware'=>['admin']],function (){
@@ -31,6 +31,6 @@ route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
   Route::get('logout','adminController@logout');
 
   // });
-
+  Route::get('delete-user/{id}','adminController@delete');
 
 });
