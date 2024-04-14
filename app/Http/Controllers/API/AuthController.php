@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -19,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        //$this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function index(Request $request){
@@ -89,12 +88,12 @@ class AuthController extends Controller
         $user->password = bcrypt(request()->password);
         $user->save();
 
-        $email= request()->email;
+      /*   $email= request()->email;
         $messageData=['name'=> request()->name,'email'=>request()->email,
         'code'=>base64_encode(request()->email)];
         Mail::send('emails.confirmation',$messageData,function($message)use($email){
             $message->to($email)->subject('confirm your account ');
-        });
+        }); */
 
         return response()->json($user, 201);
     }
