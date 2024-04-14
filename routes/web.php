@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\adminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-//route::get('/dashboard','App\Http\Controllers\Admin\adminController@dashboard');
-//Route::match(['get','post'],'login','App\Http\Controllers\Admin\adminController@login');
+/* Route::get('/dashboard','App\Http\Controllers\Admin\adminController@dashboard');
+Route::match(['get','post'],'login','App\Http\Controllers\Admin\adminController@login');
 
 route::prefix('/')->namespace('App\Http\Controllers\Admin')->group(function (){
 
@@ -33,4 +34,17 @@ route::prefix('/')->namespace('App\Http\Controllers\Admin')->group(function (){
   // });
   Route::get('delete-user/{id}','adminController@delete');
 
+});
+ */
+
+ Route::prefix('/')->namespace('App\Http\Controllers\Admin')->group(function () {
+    Route::match(['get', 'post'], 'login', [adminController::class, 'login'])->name('admin.login');
+
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::get('/users', [adminController::class, 'users'])->name('admin.users');
+        Route::post('update-user-status', [adminController::class, 'updateUserStatus'])->name('admin.updateUserStatus');
+        Route::get('logout', [adminController::class, 'logout'])->name('admin.logout');
+        Route::get('delete-user/{id}', [adminController::class, 'delete'])->name('admin.deleteUser');
+    });
 });
