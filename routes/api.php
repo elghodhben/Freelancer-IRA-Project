@@ -28,7 +28,8 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/me', [AuthController::class, 'me'])->name('me');
 
-    Route::post('/reset-password-token', [AuthController::class, 'resetPassword']);
+
     Route::post('/forget-password', [AuthController::class, 'sendPasswordResetToken']);
+    Route::post('/reset-password-token', [AuthController::class, 'CodeCheckController']);
     Route::post('/new-password', [AuthController::class, 'setNewAccountPassword']);
 });

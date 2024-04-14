@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('cin')->unique();
-            $table->integer('status')->nullable();
+            $table->integer('status')->default(0);
             $table->string('password');
             $table->string('api_token')->unique()->nullable()->default(null);
             $table->rememberToken();
