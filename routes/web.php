@@ -13,24 +13,25 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function (){
+//route::get('/dashboard','App\Http\Controllers\Admin\adminController@dashboard');
+//Route::match(['get','post'],'login','App\Http\Controllers\Admin\adminController@login');
+
+route::prefix('/')->namespace('App\Http\Controllers\Admin')->group(function (){
 
  Route::match(['get','post'],'login','adminController@login');
- //Route::group(['middleware'=>['admin']],function (){
 
-  route::get('/dashboard','adminController@dashboard');
-  route::get('/users','adminController@users');
+ Route::group(['middleware'=>['admin']],function (){
+
+  route::get('dashboard','adminController@dashboard');
+  route::get('users','adminController@users');
 
   Route::post('update-user-status','adminController@UpdateUserStatus');
 
 
   Route::get('logout','adminController@logout');
 
-  // });
+  });
 
 
 });

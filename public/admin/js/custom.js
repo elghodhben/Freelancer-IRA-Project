@@ -22,7 +22,7 @@ $(document).on("click",".confirmDelete",function(){
           window.location="/admin/delete-"+module+"/"+moduleid;
         }
       }) })
-/*********update status section************ */
+/*********update status USERS************ */
 
 
 $(document).on("click",".updateUserStatus",function(){
@@ -52,30 +52,6 @@ $(document).on("click",".updateUserStatus",function(){
 
 
 
-/****************check  */
-$(document).ready(function(){
-$("#current_password").keyup(function(){
-
-  var current_password= $("#current_password").val();
-
-  //alert(current_password)
-  $.ajax({
-      type:'post',
-      url:'/check-admin-password',
-      data:{current_password:current_password},
-
-      success:function(resp){
-         if(resp=="false"){
-           $("#check_password").html("<font color='red'>actuel mot de passe invalide </font>");
-      } else if (resp=="true"){
-           $("#check_password").html("<font color='green'>actuel mot de passe valide </font>");}
-       },error:function(){
-          alert ('error');
-      }
-  });
-
-})
-})
 
 
 
