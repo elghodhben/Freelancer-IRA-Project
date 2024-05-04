@@ -5,16 +5,18 @@ namespace App\Http\Controllers\API;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\ResetCodePassword;
+use App\Mail\SendCodeResetPassword;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use App\Mail\SendCodeResetPassword;
 
 class AuthController extends Controller
 {
 
-      /**
+    /**
      * Create a new AuthController instance.
      *
      * @return void
@@ -24,54 +26,54 @@ class AuthController extends Controller
         //$this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         return $request->user();
     }
 
 
-  public function login (Request $request){
+    public function login(Request $request)
+    {
 
-    $c=$request->validate([
-        'email'=>'required',
-        'password'=>'required|min:6'
+        $c = $request->validate([
+            'email' => 'required',
+            'password' => 'required|min:6'
 
-    ]);
+        ]);
 
-    if(Auth::attempt($c)){
-        $user=Auth::user();
+        if (Auth::attempt($c)) {
+            $user = Auth::user();
 
-        //check status of users
-        $status = User::where('email', $user->email)->where('status', 1)->count();
+            //check status of users
+            $status = User::where('email', $user->email)->where('status', 1)->count();
 
-        if ($status > 0) {
-            // Status is active (status = 1)
-            $token=md5(time()).'.'.md5($request->email);
-            $user->forceFill([
-                'api_token'=>$token,
-            ])->save();
-            return response()->json([
-                'token'=>$token,
-            ],200);
-        } else {
-            // Status is inactive or does not exist (status != 1)
-            return response()->json(['message' => 'Admin did not activate your account'], 403);
-
+            if ($status > 0) {
+                // Status is active (status = 1)
+                $token = md5(time()) . '.' . md5($request->email);
+                $user->forceFill([
+                    'api_token' => $token,
+                ])->save();
+                return response()->json([
+                    'token' => $token,
+                ], 200);
+            } else {
+                // Status is inactive or does not exist (status != 1)
+                return response()->json(['message' => 'Admin did not activate your account'], 403);
+            }
         }
-
-
+        return response()->json([
+            'message' => "Invalid credentials. Please check your email and password and try again."
+        ], 401);
     }
-      return response()->json([
-        'message' => "Invalid credentials. Please check your email and password and try again."
-    ],401);
-  }
 
 
-       /**
+    /**
      * Register a User.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register() {
+    public function register()
+    {
 
         $validator = Validator::make(request()->all(), [
 
@@ -80,7 +82,7 @@ class AuthController extends Controller
 
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
@@ -90,13 +92,6 @@ class AuthController extends Controller
         $user->email = request()->email;
         $user->password = bcrypt(request()->password);
         $user->save();
-
-      /*   $email= request()->email;
-        $messageData=['name'=> request()->name,'email'=>request()->email,
-        'code'=>base64_encode(request()->email)];
-        Mail::send('emails.confirmation',$messageData,function($message)use($email){
-            $message->to($email)->subject('confirm your account ');
-        }); */
 
         return response()->json($user, 201);
     }
@@ -126,14 +121,23 @@ class AuthController extends Controller
     public function sendPasswordResetToken(Request $request)
     {
         $data = $request->validate([
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email',
         ]);
+
+        Log::info('Request email: ' . $request->email);
+
+        // Check if the email exists in the 'users' table
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response(['message' => 'User email not found. Please verify the email address and try again.'], 404);
+        }
 
         // Delete all old code that user send before.
         ResetCodePassword::where('email', $request->email)->delete();
 
         // Generate random code
-        $data['code'] = mt_rand(100000, 999999);
+        $data['code'] = mt_rand(1000, 9999);
 
         // Create a new code
         $codeData = ResetCodePassword::create($data);
@@ -147,11 +151,17 @@ class AuthController extends Controller
     public function CodeCheckController(Request $request)
     {
         $request->validate([
-            'code' => 'required|string|exists:reset_code_passwords',
+            'code' => 'required|string',
         ]);
+
 
         // find the code
         $passwordReset = ResetCodePassword::firstWhere('code', $request->code);
+
+        // Check if the reset code does not exist
+        if (!$passwordReset) {
+            return response()->json(['message' => 'Reset code not found or has expired'], 404);
+        }
 
         // check if it does not expired: the time is one hour
         if ($passwordReset->created_at > now()->addHour()) {
@@ -168,8 +178,7 @@ class AuthController extends Controller
     public function setNewAccountPassword(Request $request)
     {
         $request->validate([
-            'code' => 'required|string|exists:reset_code_passwords',
-            'password' => 'required|string|min:6|confirmed',
+            'code' => 'exists:reset_code_passwords',
         ]);
 
         // find the code
@@ -184,13 +193,25 @@ class AuthController extends Controller
         // find user's email
         $user = User::firstWhere('email', $passwordReset->email);
 
-        // update user password
-        $user->update($request->only('password'));
+        if (!$user) {
+            return response(['message' => 'User not found'], 404);
+        }
+
+        // Attempt to update user's password
+        try {
+
+            $user->password = Hash::make($request->password);
+            $user->save();
+        } catch (\Exception $e) {
+            // Log error
+            Log::error('Error updating user password: ' . $e->getMessage());
+            return response(['message' => 'Error updating password. Please try again.'], 500);
+        }
+
 
         // delete current code
         $passwordReset->delete();
 
-        return response(['message' =>'password has been successfully reset'], 200);
+        return response(['message' => 'password has been successfully reset'], 200);
     }
-
 }

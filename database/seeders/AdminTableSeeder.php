@@ -19,6 +19,8 @@ class AdminTableSeeder extends Seeder
             'email' => Str::random(10).'@example.com',
             'password' => Hash::make('123456789'),
             'photo' => Str::random(10),
+            'role_id' => 1,
+
         ]);
 
     }

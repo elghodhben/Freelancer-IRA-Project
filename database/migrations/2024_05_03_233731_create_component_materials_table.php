@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
+        Schema::create('component_materials', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('photo');
-            $table->foreignId('role_id')->references('id')->on('roles')->onDelete('cascade')->default(1);
+            $table->foreignId('material_id')->references('id')->on('materials')->onDelete('cascade');
+            $table->string('component');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins');
+        Schema::dropIfExists('component_materials');
     }
 };

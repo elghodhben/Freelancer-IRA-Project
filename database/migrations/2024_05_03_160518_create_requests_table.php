@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notification', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('name');
+            $table->integer('phone');
+            $table->enum('analysis_type', ['complete', 'not_complete'])->default('complete');
+            $table->boolean('paiment_status')->default(false);
+            $table->boolean('status')->default(false);
+            $table->string('files_url');
             $table->timestamps();
         });
     }
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notification');
+        Schema::dropIfExists('requests');
     }
 };
